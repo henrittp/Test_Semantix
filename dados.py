@@ -15,13 +15,12 @@ def TotalErrors404(lista):
 
 def UrlsTop5_404(lista):
     url = ""
+    _max = 0
     dic = {}
+    dic5 = {} 
     count = 0
 
     for linha in lista:
-        count += 1
-        if count == 10:
-            break
         url = linha.split(" ")[0]
         if url not in dic:
             dic[url] = 1
@@ -29,14 +28,21 @@ def UrlsTop5_404(lista):
             dic[url] += 1
     
     #print(sorted(e.items(), key = lambda kv:(kv[1], kv[0]), reverse=True))
-    dic = sorted(dic.items(),reverse=True)
-    
-    count = 0
-    for key in dic:
-        count += 1     
-        print(key)
-        if count == 5:
-            break
+
+    print("\nAs 5 URLs com mais erros 404:")
+
+    for i in range(5):
+        url = ""
+        _max = 0
+        for k, v in dic.items():
+            if v > _max and k not in dic5:
+                _max = v
+                url = k
+        
+        dic5[url] = _max
+        print("\t%s: %d " % (url, _max))
+
+    #print(dic5)
 
 def QuantError404(lista):
     dias = []
@@ -57,8 +63,7 @@ def main(argv):
             if " 404 -" in linha:
                 linha_404.append(linha)
         
-        print("Oi")
-        #TotalErrors404(linha_404)
+        TotalErrors404(linha_404)
         UrlsTop5_404(linha_404)
     except:
         usage()
