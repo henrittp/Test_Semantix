@@ -1,5 +1,6 @@
 import sys, os
 import pdb
+import datetime
 
 def usage():
     print("python dados.py Arquivo.txt")
@@ -50,11 +51,23 @@ def QuantError404(lista):
         if " 404 -" in lista:
             dias ="!"            
     return 1
+#    dateAsString = string.split(" ")[3].split(":")[0].replace("[", "").replace("]", "").replace("/","-")
+#    byte = string.split(" ")[-1]
 
-#def totalBytes():
+
+def totalBytes(list_bytes):
+    total = 0
+    for b in list_bytes:
+        try:
+            total += long(b)
+        except:
+            print("Error")
+
+    print("\nTotal de Bytes retornados %d" % total)    
 
 def main(argv):
     linha_404 = []
+    list_bytes = []
     try:
         with open(argv[1], "r") as infile:
             lista = infile.readlines()
@@ -62,12 +75,16 @@ def main(argv):
         for linha in lista:
             if " 404 -" in linha:
                 linha_404.append(linha)
+            else:
+                list_bytes.append(linha.split(" ")[-1])
         
         TotalErrors404(linha_404)
         UrlsTop5_404(linha_404)
+        totalBytes(lista)
     except:
         usage()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
