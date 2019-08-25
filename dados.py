@@ -1,35 +1,39 @@
+#! -*- coding: UTF-8 -*-
+
 import sys, os
 import pdb
-from datetime import datetime
 import re
 
+log = "relatorio.log"
+
 def usage():
-    print("python dados.py Arquivo.txt")
+    print("python dados.py arquivo")
 
-#def UniqueHosts(lista):
+#Number of unique hosts
+def UniqueHosts(list):
+    hostUnique = set()
 
-def TotalErrors404(lista):
-    quant = 0
-    for linha in lista:
-        quant += 1
+    for u in list:
+        hostUnique.add(u)
 
-    print("Total erros 404: %d" % quant)
+    writeLog("Número de hosts únicos: %d" % len(hostUnique))
 
-def UrlsTop5_404(lista):
+#5 more URls resulted in 404 errors
+def UrlsTop5_404(list):
     url = ""
     _max = 0
     dic = {}
     dic5 = {} 
     count = 0
 
-    for linha in lista:
-        url = linha.split(" ")[0]
+    for line in list:
+        url = line.split(" ")[0]
         if url not in dic:
             dic[url] = 1
         else:
             dic[url] += 1
     
-    print("\nAs 5 URLs com mais erros 404:")
+    writeLog("\nAs 5 URLs com mais erros 404:")
 
     for i in range(5):
         url = ""
@@ -40,28 +44,45 @@ def UrlsTop5_404(lista):
                 url = k
         
         dic5[url] = _max
-        print("\t%s: %d " % (url, _max))
+        writeLog("\n\t%s: %d" % (url, _max))
 
-def QuantError404(lista):
-    dias_quant = {}
-    dates = re.findall(r'\d{2}/\w{3}/\d{4}', lista)
+#404 errors per day and total
+def QuantError404(list):
+    list_data = []
+    dateQuant = {}
+    date = ""
+    saveTimeStamp = ""
+    totalErrors = 0
 
-    #saveTimeStamp = ""
-    #for d in lista:
-    #    saveTimeStamp = re.findall(r'\d{2}/\w{3}/\d{4}',d)
-    #    date = datetime.strptime(saveTimeStamp, '%d/%b/%Y')
+    for d in list:
+        date = re.findall(r'\d{2}/\w{3}/\d{4}',d)[0]
 
-    #    if date not in dias_quant:
-    #        dias_quant[date] = 1
-    #    else:
-    #        dias_quant[date] += 1
-    
-    #print(dias_quant.items())
+        if not saveTimeStamp:
+            saveTimeStamp = date
 
-        #    dateAsString = string.split(" ")[3].split(":")[0].replace("[", "").replace("]", "").replace("/","-")
-#    byte = string.split(" ")[-1]
+        if date != saveTimeStamp and dateQuant:
+            list_data.append(dateQuant.copy())
+            del dateQuant[saveTimeStamp]
+            saveTimeStamp = date
 
+        if date not in dateQuant:
+            dateQuant[date] = 1
+        else:
+            dateQuant[date] += 1
+   
+    #ultima data
+    list_data.append(dateQuant.copy())
 
+    writeLog("\nErros 404 por dia:")
+
+    for i in list_data:
+        for k, v in i.items():
+            writeLog("\n\t%s : %s" % (k,v))
+            totalErrors += v
+
+    writeLog("\n\nTotal de %d\nAproximadamente %.0f erros por dia" % (totalErrors, totalErrors/float(len(list_data))))
+
+#total Bytes 
 def totalBytes(list_bytes):
     total = 0
     for b in list_bytes:
@@ -70,28 +91,53 @@ def totalBytes(list_bytes):
         except:
             total += 0 
 
-    print("\nTotal de Bytes retornados %d" % total)    
+    writeLog("\nTotal de Bytes retornados: %d Bytes" % total)    
+
+#LOG
+def writeLog(reg):
+    with open(log, "a") as infile:
+        infile.write(reg)
 
 def main(argv):
-    linha_404 = []
+    list_404 = []
     list_bytes = []
+    list_URLs = []
+    
     try:
-        with open(argv[1], "r") as infile:
-            lista = infile.readlines()
+        #remove log to save next report
+        os.remove(log)
+
+        if len(argv) == 2:
+            with open(argv[1], "r") as infile:
+                list = infile.readlines()
+
+            for line in list:
+                list_URLs.append(line.split(" ")[0])
+                if " 404 -" in line:
+                    list_404.append(line)
+                else:
+                    list_bytes.append(line.split(" ")[-1])
         
-        for linha in lista:
-            if " 404 -" in linha:
-                linha_404.append(linha)
-            else:
-                list_bytes.append(linha.split(" ")[-1])
-        
-        TotalErrors404(linha_404)
-        UrlsTop5_404(linha_404)
-        totalBytes(list_bytes)
-        QuantError404(linha_404)
-    except:
-        usage()
-        return 1
+            UniqueHosts(list_URLs)
+            writeLog('{:-<45}'.format('\n'))
+
+            QuantError404(list_404)
+            writeLog('{:-<45}'.format('\n'))
+
+            UrlsTop5_404(list_404)
+            writeLog('{:-<45}'.format('\n'))
+
+            totalBytes(list_bytes)
+
+            print("Processado com sucesso")
+            return 0
+
+        else:
+            usage()
+            return 1
+
+    except ValueError:
+        return False 
 
 
 if __name__ == "__main__":
