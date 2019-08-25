@@ -105,7 +105,8 @@ def main(argv):
     
     try:
         #remove log to save next report
-        os.remove(log)
+        if os.path.isfile(log):
+            os.remove(log)
 
         if len(argv) == 2:
             with open(argv[1], "r") as infile:
