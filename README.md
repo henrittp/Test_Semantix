@@ -1,6 +1,6 @@
 # Project_Semantix
 
-# Questões
+## Questões
 Qual o objetivo do comando cache em Spark?
 - O comando cache ajuda a melhorar a eficiência do código,pois permite que resultados intermediários de operações lazy possam ser armazenados e reutilizados repetidamente.
 
@@ -18,14 +18,38 @@ GroupByKey é menos eficiente que reduceByKey em grandes dataset. Por quê?
  GroupByKey é apenas para agrupar seu conjunto de dados com base em uma chave o que resultará em embaralhamento de dados quando o RDD não estiver particionado.
 
 Explique o que o código Scala abaixo faz
+```
 1. val textFile = sc . textFile ( "hdfs://..." )
 2. val counts = textFile . flatMap ( line => line . split ( " " ))
 3.           . map ( word => ( word , 1 ))
 4.           . reduceByKey ( _ + _ )
 5. counts . saveAsTextFile ( "hdfs://..." )
+```
 
 - (linha 1) o arquivo é lido.
 - (linha 2) Cada linha é "quebrada" em uma sequência de palavras de acordo com o delimitador passado como parâmetro para a função split.
 - (linha 3) Cada palavra é transformada em um mapeamente de chave-valor, com chave igual à própria palavra e valor 1
 - (linha 4) Esses valores são agregados por chave, através da operação de soma.
 - (linha 5) O RDD com a contagem de cada palavra é salvo em um arquivo texto.
+
+## Desafio (dataAnalysis.py)
+O principal objetivo da aplicação é ler um conjunto de dados e gerar um log com os resultados das seguintes analises:
+
+1. Número de hosts únicos.
+2. O total de erros 404.
+3. Os 5 URLs que mais causaram erro 404.
+4. Quantidade de erros 404 por dia.
+5. O total de bytes retornados.
+
+#### Dataset
+- NASA_access_log_Jul95
+- NASA_access_log_Aug95
+
+#### Como executar
+O arquivo que contém o conjunto de dados deve ser passado como parâmetro para o script:
+ ```
+ python dataAnalysis.py NASA_access_log_Jul95
+ ```
+Após a execução será gerado o log (relatorio.log) no diretório corrente.
+
+Obs: A cada execução do script o relatorio.log é sobrescrito.
