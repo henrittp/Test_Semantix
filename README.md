@@ -53,3 +53,5 @@ O arquivo que contém o conjunto de dados deve ser passado como parâmetro para 
 Após a execução será gerado o log (relatorio.log) no diretório corrente.
 
 Obs: A cada execução do script o relatorio.log é sobrescrito.
+
+Versão Python: 2.7
