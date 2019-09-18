@@ -1,22 +1,20 @@
 #! -*- coding: UTF-8 -*-
 
 import sys, os
-import pdb
 import re
 
 log = "relatorio.log"
 
 def usage():
+    print("*** Como executar ***")
     print("python dados.py arquivo")
 
 #Number of unique hosts
-def UniqueHosts(list):
-    hostUnique = set()
+def UniqueHosts(list_URLs):
+    hostUnique = set(list_URLs)
 
-    for u in list:
-        hostUnique.add(u)
-
-    writeLog("Número de hosts únicos: %d" % len(hostUnique))
+    total = sum(1 for hosts in hostUnique)
+    writeLog("Número de hosts únicos: %d" % total)
 
 #5 more URls resulted in 404 errors
 def UrlsTop5_404(list):
@@ -70,7 +68,7 @@ def QuantError404(list):
         else:
             dateQuant[date] += 1
    
-    #ultima data
+    #last date
     list_data.append(dateQuant.copy())
 
     writeLog("\nErros 404 por dia:")
@@ -99,26 +97,19 @@ def writeLog(reg):
         infile.write(reg)
 
 def main(argv):
-    list_404 = []
-    list_bytes = []
-    list_URLs = []
-    
     try:
-        #remove log to save next report
-        if os.path.isfile(log):
-            os.remove(log)
-
         if len(argv) == 2:
-            with open(argv[1], "r") as infile:
-                list = infile.readlines()
+            #remove log to save next report
+            if os.path.isfile(log):
+                os.remove(log)
 
-            for line in list:
-                list_URLs.append(line.split(" ")[0])
-                if " 404 -" in line:
-                    list_404.append(line)
-                else:
-                    list_bytes.append(line.split(" ")[-1])
-        
+            with open(argv[1], "r") as infile:
+                lista = infile.readlines()
+
+            list_404 = filter(lambda l: " 404 -" in l, lista)
+            list_URLs = map(lambda l: l.split(" ")[0], lista)
+            list_bytes = map(lambda l: l.split(" ")[-1], lista)
+    
             UniqueHosts(list_URLs)
             writeLog('{:-<45}'.format('\n'))
 
@@ -130,7 +121,7 @@ def main(argv):
 
             totalBytes(list_bytes)
 
-            print("Processado com sucesso")
+            print("Log processado com sucesso")
             return 0
 
         else:
