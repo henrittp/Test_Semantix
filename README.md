@@ -43,6 +43,6 @@ O principal objetivo da aplicação é ler um conjunto de dados e gerar um log c
 
 Após a execução do programa será gerado dois logs, report_Jul95.log referente ao dataset **NASA_access_log_Jul95** e report_Aug95.log referente ao dataset **NASA_access_log_Aug95**
 
-Obs: A cada execução, os arquivos log de serão sobrescritos.
+Obs: A cada execução os arquivos log de serão sobrescritos.
 
 **Versão Python: 2.7**
