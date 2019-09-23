@@ -41,17 +41,8 @@ O principal objetivo da aplicação é ler um conjunto de dados e gerar um log c
 4. Quantidade de erros 404 por dia.
 5. O total de bytes retornados.
 
-#### Dataset
-- NASA_access_log_Jul95
-- NASA_access_log_Aug95
+Após a execução do programa será gerado dois logs, report_Jul95.log referente ao dataset **NASA_access_log_Jul95** e report_Aug95.log referente ao dataset **NASA_access_log_Aug95**
 
-#### Como executar
-O arquivo que contém o conjunto de dados deve ser passado como parâmetro para o script:
- ```
- python dataAnalysis.py NASA_access_log_Jul95
- ```
-Após a execução será gerado o log (relatorio.log) no diretório corrente.
-
-Obs: A cada execução do script o relatorio.log é sobrescrito.
+Obs: A cada execução, os arquivos log serão sobrescritos.
 
 **Versão Python: 2.7**
